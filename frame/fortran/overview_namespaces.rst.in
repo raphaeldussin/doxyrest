@@ -12,13 +12,18 @@
 
 local argArray = table.pack(...)
 local compound = argArray[1]
-local sectionName = argArray[2]
+}
+	// namespaces
 
-includeFile(
-	"details.rst.in",
-	compound,
-	compound.functionArray,
-	getFunctionDeclString,
-	sectionName
-	)
+%{
+for i = 1, #compound.namespaceArray do
+	local item = compound.namespaceArray[i]
+	local targetFileName = getItemFileName(item)
+
+	if compound.compoundKind ~= "group" then
+		generateFile(targetFileName, "namespace.rst.in", item)
+	end
+
+	emit(getNamespaceTree(item))
+end -- for
 }

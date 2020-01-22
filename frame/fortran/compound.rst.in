@@ -12,9 +12,32 @@
 
 local argArray = table.pack(...)
 local compound = argArray[1]
+
+local variableSectionName
+local functionSectionName
+local prevGetItemName = getItemName
+local prevCompoundId = g_currentCompoundId
+local indent
+
+if compound.compoundKind == "namespace" or compound.compoundKind == "group" then
+	variableSectionName = "Global Variables"
+	functionSectionName = "Global Functions"
+	indent = ""
+else
+	variableSectionName = "Fields"
+	functionSectionName = "Methods"
+	indent = "\t"
+end
+
+if compound.compoundKind == "group" then
+	getItemName = getItemQualifiedName
+else
+	getItemName = getItemSimpleName
+	g_currentCompoundId = compound.id
+end
+
 local compoundStats = prepareCompound(compound)
 }
-
 $(getCompoundTocTree(compound))
 
 %{
@@ -61,7 +84,7 @@ if compoundStats.hasItems or
 	compound.baseCompound or
 	compound.derivedTypeArray and #compound.derivedTypeArray > 0 then
 
-	includeFile("overview_compound.rst.in", compound)
+	includeFile("overview_compound.rst.in", compound, variableSectionName, functionSectionName)
 end
 
 if hasDetails then
@@ -76,19 +99,46 @@ $(getItemDetailedDocumentation(compound))
 %{
 end -- if
 
+if compoundStats.hasDocumentedUnnamedEnumValues then
+	includeFile("details_unnamed_enum_values.rst.in", compound)
+end
+
+if compoundStats.hasDocumentedTypedefs then
+	includeFile("details_typedefs.rst.in", compound)
+end
+
 if compoundStats.hasDocumentedVariables then
-	includeFile("details_variables.rst.in", compound, "Variables")
+	includeFile("details_variables.rst.in", compound, variableSectionName)
+end
+
+if compoundStats.hasDocumentedProperties then
+	includeFile("details_properties.rst.in", compound)
+end
+
+if compoundStats.hasDocumentedEvents then
+	includeFile("details_events.rst.in", compound)
+end
+
+if compoundStats.hasDocumentedConstruction then
+	includeFile("details_construction.rst.in", compound)
 end
 
 if compoundStats.hasDocumentedFunctions then
-	includeFile("details_functions.rst.in", compound, compound.functionArray, "Functions")
+	includeFile("details_functions.rst.in", compound, functionSectionName)
+end
+
+if compoundStats.hasDocumentedAliases then
+	includeFile("details_aliases.rst.in", compound)
 end
 
 if compoundStats.hasDocumentedDefines then
-	includeFile("details_functions.rst.in", compound, compound.defineArray, "Macros")
+	includeFile("details_defines.rst.in", compound)
 end
 
 if #compound.footnoteArray > 0 then
 	includeFile("footnotes.rst.in", compound)
 end
+
+getItemName = prevGetItemName
+g_currentCompoundId = prevCompoundId
 }

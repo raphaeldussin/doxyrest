@@ -11,14 +11,17 @@
 --------------------------------------------------------------------------------
 
 local argArray = table.pack(...)
-local compound = argArray[1]
-local sectionName = argArray[2]
+local example = argArray[1]
 
-includeFile(
-	"details.rst.in",
-	compound,
-	compound.functionArray,
-	getFunctionDeclString,
-	sectionName
-	)
+if FORCE_INCLUDE_FILE then
 }
+.. include:: $FORCE_INCLUDE_FILE
+%{
+end -- if
+}
+.. index:: pair: example; $(example.name)
+.. _doxid-$(example.id):
+
+$(getTitle(example.name, 1))
+
+$(getItemDetailedDocumentation(example))

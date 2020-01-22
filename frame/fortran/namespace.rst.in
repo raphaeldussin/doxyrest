@@ -11,14 +11,21 @@
 --------------------------------------------------------------------------------
 
 local argArray = table.pack(...)
-local compound = argArray[1]
-local sectionName = argArray[2]
+local namespace = argArray[1]
 
-includeFile(
-	"details.rst.in",
-	compound,
-	compound.functionArray,
-	getFunctionDeclString,
-	sectionName
-	)
+if FORCE_INCLUDE_FILE then
+}
+.. include:: $FORCE_INCLUDE_FILE
+%{
+end -- if
+
+local name = getItemQualifiedName(namespace)
+}
+.. index:: pair: namespace; $name
+.. _doxid-$(namespace.id):
+
+$(getTitle("namespace " .. name, 1))
+
+%{
+includeFile("compound.rst.in", namespace)
 }

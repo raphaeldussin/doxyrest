@@ -12,13 +12,23 @@
 
 local argArray = table.pack(...)
 local compound = argArray[1]
-local sectionName = argArray[2]
 
 includeFile(
-	"details.rst.in",
+	"overview_common.rst.in",
 	compound,
-	compound.functionArray,
-	getFunctionDeclString,
-	sectionName
+	compound.constructorArray,
+	getVoidFunctionDeclString,
+	"construction"
 	)
+
+if not EXCLUDE_DESTRUCTORS and compound.destructor then
+	local item = compound.destructor
+	local extraSep = ""
+	if isPrevMl then
+		extraSep = "\n"
+	end
+}
+$extraSep	$(getVoidFunctionDeclString(item, getItemNameTemplate(item), "\t"));
+%{
+end -- if
 }

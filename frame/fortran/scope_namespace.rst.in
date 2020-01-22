@@ -11,14 +11,18 @@
 --------------------------------------------------------------------------------
 
 local argArray = table.pack(...)
-local compound = argArray[1]
-local sectionName = argArray[2]
+local namespace = argArray[1]
+local isOpen = argArray[2]
 
-includeFile(
-	"details.rst.in",
-	compound,
-	compound.functionArray,
-	getFunctionDeclString,
-	sectionName
-	)
+if isOpen then
+}
+	namespace $(namespace.name) {
+
+%{
+else
+}
+
+	} // namespace $(namespace.name)
+%{
+end -- if
 }
